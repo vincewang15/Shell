@@ -1,0 +1,59 @@
+NAME
+sish - C++ shell
+
+SYNOPSIS
+sish [-x] [-d <level>] [-f file [arg] ... ]
+where the square brackets ([ ]) indicate an optional word(s), and ”...” indicates 0 or more words. sish normally reads commands from stdin.
+
+Argument list processing
+-x: The command line after variable substitution is displayed before the command is evaluated.
+-d: Output debug messages. 
+    DebugLevel=0 means don’t output any debug messages.
+    DebugLevel=1 outputs enough information so that correct operation can be verified.
+-f: Input is from a file instead of stdin; i.e., File is a shell script. If there are arguments, the strings are assigned to the shell variables $1, $2, etc.
+
+Batch Mode
+If shell is executed in batch mode (i.e., using the –f file option), then shell would open the file, read all the commands from file and execute them one after the other. When the end-of-file is reached, shell would exit automatically. 
+
+Internal Commands
+show W1 W2 … : display the word(s) followed by a newline
+set W1 W2: set the value of the local variable W1 to the value W2
+unset W1: un set a previously set local variable W1
+export W1 W2: export the global variable W1 with the value W2 to the environment
+unexport W: unexport the global variable W from the environment
+environ: this command displays to the terminal a listing of all environment strings that are currently defined
+chdir W: change the current directory
+exit I: exit the shell and return status I. If no value for I is given, the shell would exit with a status code of 0.
+wait I: the shell waits for process I (a pid) to complete. If I is -1, the shell waits for any children to complete
+clr: clear the screen and display a new command line prompt at the top
+dir: list the contents of the current directory
+echo <comment>: display <comment> on the display followed by a new line
+help: display the user manual
+pause: pause the operation of the shell until the ‘Enter’ key is pressed
+history n: this command would list to the display the last n executed commands. If shell executed less than n commands, then shell would just display all of these commands. if n
+is not specified, then displays all of the previous commands. 
+repeat n: prints to the screen, and executes the command in the history list which corresponds to the nth line. If n is not specified, then repeat execute the previous command.
+kill [-n] pid: this command send a signal to the specified process. where n is the numeric id associated with the signal to be sent, and PID is the process ID number. If the signal
+# is not specified, then the kill command would send the SIGTERM signal by default.
+
+Shell Environment
+Shell environment is stored in environ and can be modified by builtin function putenv and got by genet. It includes information such as parent path, shell path.
+
+Background Commands
+A command that run in the background is ended with an ampersand "!" as in "myprog !" which means execute "myprog" in the background. Background commands return immediately and execute in the background. The sish returns control immediately to the user so they may execute additional commands. Shell continues execution without waiting for the 	specified programs to complete.
+
+Variable Substitution
+The dollar sign character "$" as the first character of a word "$XY" signifies that "XY" is a variable. Single-level variable substitution is always done before command evaluation. No recursive substitution is allowed (e.g. the "$Y" in "$X$Y" is not replaced since $X$Y is a single unit of text, aka “word”).
+There are three special shell variables:
+$$: PID of this shell
+$?: Decimal value returned by the last foreground command
+$!: PID of the last background command
+
+Stdin/Stdout Redirection
+Stdin and/or stdout can be redirected to/from a file using the following syntax: "myprog arg1 arg2 < F1 > F2" which means execute program myprog with command line arguments arg1 and arg2, and redirect stdin from F1 and redirect stdout to F2 for program "myprog"
+
+Pipes
+If pipes are present in the input line, then the input line will consist of multiple commands with their associated arguments. The “|” symbol is the command separator in this case, and all characters between two “|” symbols would be passed as arguments to the programs specified in each command.
+
+Terminal-Generated Signals
+"CTRL-C" terminates the foreground process but not sish. “CTRL-S” stops the foreground process but not sish. “CTRL-Q” continues the foreground process. “CTRL-Z” stops the set of processes running in the foreground (if any). Shell will receive signals related to these CTRL characters whenever you type one of them on the keyboard.
